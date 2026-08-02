@@ -17,7 +17,7 @@ datasource db {
 model User {
   id            String    @id
   name          String
-  firstname      String
+  firstname     String
   lastname      String
   email         String
   emailVerified Boolean   @default(false)
@@ -26,9 +26,48 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  comments      Comment[]
+  likes         Like[]
 
   @@unique([email])
   @@map("user")
+}
+
+model Post {
+  id       String    @id @default(cuid())
+  title    String
+  body     String
+  images   String[]
+  comments Comment[]
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @default(now())
+  likes     Like[]
+}
+
+model Comment {
+  id      String @id @default(cuid())
+  comment String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
 }
 
 model Session {
