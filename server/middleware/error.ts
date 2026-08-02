@@ -27,8 +27,6 @@ export const errorHandler = (
         ? err.status
         : 500;
 
-  console.error(inspect(err, { depth: null, showHidden: true, colors: true }));
-
   res.status(status).json({
     success: false,
     message: err.body?.message ?? err.message ?? "Internal Server Error",
