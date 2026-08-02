@@ -32,7 +32,11 @@ router.post("/login", async (req: Request, res: Response) => {
 
   console.log("session created: ", session);
 
-  res.json({ success: true, message: "User logged in successfully" });
+  res.json({
+    success: true,
+    message: "User logged in successfully",
+    ...session,
+  });
 });
 
 router.post("/logout", async (req: Request, res: Response) => {
