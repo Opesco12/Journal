@@ -33,6 +33,22 @@ export const login = async (req: Request, res: Response) => {
   });
 };
 
+export const getCurrentUser = async (req: Request, res: Response) => {
+  const user = req.user;
+
+  // if (!user) {
+  //   return res.status(401).json({
+  //     success: false,
+  //     message: "Unauthenticated",
+  //   });
+  // }
+
+  res.json({
+    success: true,
+    user,
+  });
+};
+
 export const logout = async (req: Request, res: Response) => {
   await logoutUser(req.headers);
 
