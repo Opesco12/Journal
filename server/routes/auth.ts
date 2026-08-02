@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from "express";
 import { auth } from "../lib/auth";
 import { fromNodeHeaders } from "better-auth/node";
+import { requireAuth } from "../middleware/auth";
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ router.post("/login", async (req: Request, res: Response) => {
   });
 });
 
-router.post("/logout", async (req: Request, res: Response) => {
+router.post("/logout", requireAuth, async (req: Request, res: Response) => {
   await auth.api.signOut({
     headers: fromNodeHeaders(req.headers),
   });

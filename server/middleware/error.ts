@@ -1,3 +1,4 @@
+import { inspect } from "node:util";
 import { type Request, type Response, type NextFunction } from "express";
 
 type HttpError = Error & {
@@ -25,6 +26,8 @@ export const errorHandler = (
       : typeof err.status === "number"
         ? err.status
         : 500;
+
+  console.error(inspect(err, { depth: null, showHidden: true, colors: true }));
 
   res.status(status).json({
     success: false,

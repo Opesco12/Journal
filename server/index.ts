@@ -10,10 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// authentication middleware
-app.use(requireAuth);
-
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 
 // error handling middleware
 app.use(errorHandler);
