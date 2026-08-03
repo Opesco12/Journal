@@ -15,19 +15,20 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String     @id
   name          String
   firstname     String
   lastname      String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean    @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   sessions      Session[]
   accounts      Account[]
   comments      Comment[]
   likes         Like[]
+  bookmarks     Bookmark[]
 
   @@unique([email])
   @@map("user")
@@ -40,9 +41,24 @@ model Post {
   images   String[]
   comments Comment[]
 
-  createdAt DateTime @default(now())
-  updateAt  DateTime @default(now())
-  likes     Like[]
+  createdAt      DateTime       @default(now())
+  updateAt       DateTime       @default(now())
+  likes          Like[]
+  published      Boolean        @default(false)
+  postCategories PostCategory[]
+  bookmarks      Bookmark[]
+}
+
+model Bookmark {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
 }
 
 model Comment {
@@ -54,6 +70,11 @@ model Comment {
 
   postId String
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // self-relation for replies
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies  Comment[] @relation("CommentReplies")
 
   createdAt DateTime @default(now())
 }
@@ -68,6 +89,22 @@ model Like {
   createdAt DateTime @default(now())
 
   @@unique([postId, userId])
+}
+
+model Category {
+  id             String         @id @default(cuid())
+  name           String
+  postCategories PostCategory[]
+}
+
+model PostCategory {
+  postId     String
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+
+  @@id([postId, categoryId])
 }
 
 model Session {
