@@ -2,10 +2,12 @@ import type { Request, Response } from "express";
 import { prisma } from "../prisma";
 import {
   createNewPost,
+  deletePost,
   getDraftPosts,
   getPosts,
   publishDraftPost,
-  unpublishPost,
+  unPublishPost,
+  updatePost,
   uploadImage,
 } from "../services/post";
 
@@ -64,9 +66,9 @@ export const draftPostsController = async (req: Request, res: Response) => {
 };
 
 export const publishPostController = async (req: Request, res: Response) => {
-  const { postId } = req.body;
+  const { postId } = req.params;
 
-  const post = await publishDraftPost(postId);
+  const post = await publishDraftPost(postId as string);
 
   console.log("published post: ", post);
 
@@ -77,11 +79,55 @@ export const publishPostController = async (req: Request, res: Response) => {
 };
 
 export const unpublishPostController = async (req: Request, res: Response) => {
-  const { postId } = req.body;
-  const post = await unpublishPost(postId);
+  const { postId } = req.params;
+  const post = await unPublishPost(postId as string);
 
   res.json({
     success: true,
     message: "Post saved to drafts",
+  });
+};
+
+export const updatePostController = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  const { title, body, images: bodyImages } = req.body;
+  const files = (req.files as Express.Multer.File[]) || [];
+
+  const existingImageUrls: string[] = !bodyImages
+    ? []
+    : Array.isArray(bodyImages)
+      ? bodyImages
+      : [bodyImages];
+
+  const uploadedImages = await Promise.all(
+    files.map((file) =>
+      uploadImage({ file, path: `posts/${Date.now()}-${file.originalname}` }),
+    ),
+  );
+
+  const uploadedUrls = uploadedImages
+    .map((img) => img.url)
+    .filter((url): url is string => typeof url === "string");
+  const images = [...existingImageUrls, ...uploadedUrls];
+
+  const post = await updatePost({
+    postId: postId as string,
+    body,
+    title,
+    ...(images.length > 0 && { images }),
+  });
+
+  res.json({
+    success: true,
+    post,
+  });
+};
+
+export const deletePostController = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  const deleted = await deletePost(postId as string);
+  res.json({
+    success: true,
+    message: "Post deleted",
   });
 };

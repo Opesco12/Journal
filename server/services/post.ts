@@ -48,12 +48,41 @@ export const publishDraftPost = (postId: string) =>
     },
   });
 
-export const unpublishPost = (postId: string) =>
+export const unPublishPost = (postId: string) =>
   prisma.post.update({
     where: {
       id: postId,
     },
     data: {
       published: false,
+    },
+  });
+
+export const updatePost = ({
+  postId,
+  title,
+  body,
+  images,
+}: {
+  postId: string;
+  title?: string;
+  body?: string;
+  images?: string[];
+}) =>
+  prisma.post.update({
+    where: {
+      id: postId,
+    },
+    data: {
+      ...(title !== undefined && { title }),
+      ...(body !== undefined && { body }),
+      ...(images !== undefined && { images }),
+    },
+  });
+
+export const deletePost = (postId: string) =>
+  prisma.post.delete({
+    where: {
+      id: postId,
     },
   });
