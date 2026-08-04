@@ -5,10 +5,14 @@ import {
   getDraftPosts,
   getPosts,
   publishDraftPost,
+  unpublishPost,
   uploadImage,
 } from "../services/post";
 
-export const getAllPublishedPosts = async (req: Request, res: Response) => {
+export const getAllPublishedPostsController = async (
+  req: Request,
+  res: Response,
+) => {
   const posts = await getPosts();
 
   res.json({
@@ -17,7 +21,7 @@ export const getAllPublishedPosts = async (req: Request, res: Response) => {
   });
 };
 
-export const createPost = async (req: Request, res: Response) => {
+export const createPostController = async (req: Request, res: Response) => {
   const { title, body, images: bodyImages } = req.body;
   const files = (req.files as Express.Multer.File[]) || [];
 
@@ -50,7 +54,7 @@ export const createPost = async (req: Request, res: Response) => {
   });
 };
 
-export const draftPosts = async (req: Request, res: Response) => {
+export const draftPostsController = async (req: Request, res: Response) => {
   const posts = await getDraftPosts();
 
   res.json({
@@ -59,7 +63,7 @@ export const draftPosts = async (req: Request, res: Response) => {
   });
 };
 
-export const publishPost = async (req: Request, res: Response) => {
+export const publishPostController = async (req: Request, res: Response) => {
   const { postId } = req.body;
 
   const post = await publishDraftPost(postId);
@@ -69,5 +73,15 @@ export const publishPost = async (req: Request, res: Response) => {
   res.json({
     success: true,
     message: "Post published successfully",
+  });
+};
+
+export const unpublishPostController = async (req: Request, res: Response) => {
+  const { postId } = req.body;
+  const post = await unpublishPost(postId);
+
+  res.json({
+    success: true,
+    message: "Post saved to drafts",
   });
 };

@@ -1,17 +1,19 @@
 import express from "express";
 import {
-  createPost,
-  draftPosts,
-  getAllPublishedPosts,
-  publishPost,
+  createPostController,
+  draftPostsController,
+  getAllPublishedPostsController,
+  publishPostController,
+  unpublishPostController,
 } from "../controllers/posts";
 
 const router = express.Router();
 
-router.get("/", getAllPublishedPosts);
-router.get("/drafts", draftPosts);
-router.put("/publish", publishPost);
+router.get("/", getAllPublishedPostsController);
+router.get("/drafts", draftPostsController);
+router.put("/publish", publishPostController);
+router.put("/unPublish", unpublishPostController);
 
-router.post("/create", createPost);
+router.post("/create", createPostController);
 
 export default router;

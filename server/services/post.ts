@@ -47,3 +47,13 @@ export const publishDraftPost = (postId: string) =>
       published: true,
     },
   });
+
+export const unpublishPost = (postId: string) =>
+  prisma.post.update({
+    where: {
+      id: postId,
+    },
+    data: {
+      published: false,
+    },
+  });
