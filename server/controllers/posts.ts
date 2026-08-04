@@ -1,6 +1,12 @@
 import type { Request, Response } from "express";
 import { prisma } from "../prisma";
-import { createNewPost, getPosts, uploadImage } from "../services/post";
+import {
+  createNewPost,
+  getDraftPosts,
+  getPosts,
+  publishDraftPost,
+  uploadImage,
+} from "../services/post";
 
 export const getAllPublishedPosts = async (req: Request, res: Response) => {
   const posts = await getPosts();
@@ -41,5 +47,27 @@ export const createPost = async (req: Request, res: Response) => {
   res.json({
     success: true,
     message: "Post added to your drafts",
+  });
+};
+
+export const draftPosts = async (req: Request, res: Response) => {
+  const posts = await getDraftPosts();
+
+  res.json({
+    success: true,
+    posts,
+  });
+};
+
+export const publishPost = async (req: Request, res: Response) => {
+  const { postId } = req.body;
+
+  const post = await publishDraftPost(postId);
+
+  console.log("published post: ", post);
+
+  res.json({
+    success: true,
+    message: "Post published successfully",
   });
 };

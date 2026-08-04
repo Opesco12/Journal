@@ -30,3 +30,20 @@ export const createNewPost = ({
       images,
     },
   });
+
+export const getDraftPosts = () =>
+  prisma.post.findMany({
+    where: {
+      published: false,
+    },
+  });
+
+export const publishDraftPost = (postId: string) =>
+  prisma.post.update({
+    where: {
+      id: postId,
+    },
+    data: {
+      published: true,
+    },
+  });
