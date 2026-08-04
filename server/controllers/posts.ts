@@ -5,6 +5,7 @@ import {
   deletePost,
   getDraftPosts,
   getPosts,
+  getSinglePost,
   publishDraftPost,
   unPublishPost,
   updatePost,
@@ -58,7 +59,7 @@ export const createPostController = async (req: Request, res: Response) => {
 
 export const draftPostsController = async (req: Request, res: Response) => {
   const posts = await getDraftPosts();
-
+  console.log("drafts running: ", posts);
   res.json({
     success: true,
     posts,
@@ -129,5 +130,15 @@ export const deletePostController = async (req: Request, res: Response) => {
   res.json({
     success: true,
     message: "Post deleted",
+  });
+};
+
+export const getSinglePostController = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  const post = await getSinglePost(postId as string);
+  console.log("this is running");
+  res.json({
+    success: true,
+    post,
   });
 };
