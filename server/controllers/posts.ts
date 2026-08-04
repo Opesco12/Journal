@@ -12,10 +12,16 @@ export const getAllPublishedPosts = async (req: Request, res: Response) => {
 };
 
 export const createPost = async (req: Request, res: Response) => {
-  const { title, body } = req.body;
+  const { title, body, images: bodyImages } = req.body;
   const files = req.files as Express.Multer.File[];
 
   console.log(title, body);
+
+  const existingImageUrls: string[] = !bodyImages
+    ? []
+    : Array.isArray(bodyImages)
+      ? bodyImages
+      : [bodyImages];
 
   const uploadedImages = await Promise.all(
     files?.map((file) =>
@@ -23,9 +29,14 @@ export const createPost = async (req: Request, res: Response) => {
     ),
   );
 
-  const images = uploadedImages.map((img) => img.url);
+  const uploadedUrls = uploadedImages.map((img) => img.url);
+  const images = [...existingImageUrls, ...uploadedUrls];
 
-  const post = await createNewPost({ title, body, images: images as string[] });
+  const post = await createNewPost({
+    title,
+    body,
+    images: images as string[],
+  });
 
   console.log("new post created: ", post);
 
