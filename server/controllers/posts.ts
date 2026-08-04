@@ -1,0 +1,36 @@
+import type { Request, Response } from "express";
+import { prisma } from "../prisma";
+import { createNewPost, getPosts, uploadImage } from "../services/post";
+
+export const getAllPublishedPosts = async (req: Request, res: Response) => {
+  const posts = await getPosts();
+
+  res.json({
+    success: true,
+    posts,
+  });
+};
+
+export const createPost = async (req: Request, res: Response) => {
+  const { title, body } = req.body;
+  const files = req.files as Express.Multer.File[];
+
+  console.log(title, body);
+
+  const uploadedImages = await Promise.all(
+    files?.map((file) =>
+      uploadImage({ file, path: `posts/${Date.now()}-${file.originalname}` }),
+    ),
+  );
+
+  const images = uploadedImages.map((img) => img.url);
+
+  const post = await createNewPost({ title, body, images: images as string[] });
+
+  console.log("new post created: ", post);
+
+  res.json({
+    success: true,
+    message: "Post added to your drafts",
+  });
+};
