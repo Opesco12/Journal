@@ -20,6 +20,8 @@ export const errorHandler = (
     return next(err);
   }
 
+  console.log("Error occured: ", err);
+
   const status =
     typeof err.statusCode === "number"
       ? err.statusCode
