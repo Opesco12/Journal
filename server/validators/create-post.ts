@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createPostSchema = z.object({
+const createPostBodySchema = z.object({
   title: z
     .string()
     .trim()
@@ -29,4 +29,8 @@ export const createPostSchema = z.object({
     .transform((val) => (!val ? [] : Array.isArray(val) ? val : [val])),
 });
 
-export type CreatePostInput = z.infer<typeof createPostSchema>;
+export const createPostSchema = z.object({
+  body: createPostBodySchema,
+});
+
+export type CreatePostInput = z.infer<typeof createPostBodySchema>;
