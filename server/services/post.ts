@@ -88,7 +88,7 @@ export const deletePost = (postId: string) =>
   });
 
 export const getSinglePost = (postId: string) =>
-  prisma.post.findUnique({
+  prisma.post.findUniqueOrThrow({
     where: {
       id: postId,
     },

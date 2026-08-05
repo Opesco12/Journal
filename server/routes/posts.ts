@@ -1,23 +1,26 @@
 import express from "express";
 import {
   createPostController,
+  deletePostController,
   draftPostsController,
   getAllPublishedPostsController,
+  getSinglePostController,
   publishPostController,
   updatePostController,
   unpublishPostController,
-  getSinglePostController,
-  deletePostController,
 } from "../controllers/posts";
 import { validate } from "../middleware/validate";
-import { createPostSchema } from "../validators/create-post";
-import { updatePostSchema } from "../validators/update-post";
+import {
+  createPostSchema,
+  postIdParamSchema,
+  updatePostSchema,
+} from "../validators/posts";
 
 const router = express.Router();
 
 router.get("/", getAllPublishedPostsController);
 router.get("/drafts", draftPostsController);
-router.get("/:postId", getSinglePostController);
+router.get("/:postId", validate(postIdParamSchema), getSinglePostController);
 
 router.patch("/publish/:postId", publishPostController);
 router.patch("/unPublish/:postId", unpublishPostController);

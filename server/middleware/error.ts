@@ -1,4 +1,4 @@
-import { inspect } from "node:util";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { type Request, type Response, type NextFunction } from "express";
 
 type HttpError = Error & {
@@ -8,6 +8,7 @@ type HttpError = Error & {
     message: string;
     code: number;
   };
+  code?: string;
 };
 
 export const errorHandler = (
@@ -21,6 +22,22 @@ export const errorHandler = (
   }
 
   console.log("Error occured: ", err);
+
+  if (err instanceof PrismaClientKnownRequestError) {
+    if (err.code === "P2025") {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    if (err.code === "P2002") {
+      return res.status(409).json({
+        success: false,
+        message: "A record with this value already exists",
+      });
+    }
+  }
 
   const status =
     typeof err.statusCode === "number"
