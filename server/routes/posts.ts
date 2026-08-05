@@ -9,6 +9,8 @@ import {
   getSinglePostController,
   deletePostController,
 } from "../controllers/posts";
+import { validate } from "../middleware/validate";
+import { createPostSchema } from "../validators/create-post";
 
 const router = express.Router();
 
@@ -20,6 +22,6 @@ router.patch("/publish/:postId", publishPostController);
 router.patch("/unPublish/:postId", unpublishPostController);
 router.patch("/update/:postId", updatePostController);
 router.delete("/:postId", deletePostController);
-router.post("/create", createPostController);
+router.post("/create", validate(createPostSchema), createPostController);
 
 export default router;
