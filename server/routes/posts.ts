@@ -22,8 +22,16 @@ router.get("/", getAllPublishedPostsController);
 router.get("/drafts", draftPostsController);
 router.get("/:postId", validate(postIdParamSchema), getSinglePostController);
 
-router.patch("/publish/:postId", publishPostController);
-router.patch("/unPublish/:postId", unpublishPostController);
+router.patch(
+  "/publish/:postId",
+  validate(postIdParamSchema),
+  publishPostController,
+);
+router.patch(
+  "/unPublish/:postId",
+  validate(postIdParamSchema),
+  unpublishPostController,
+);
 router.patch(
   "/update/:postId",
   validate(updatePostSchema),
