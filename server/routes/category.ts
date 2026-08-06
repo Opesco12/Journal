@@ -6,13 +6,40 @@ import {
   getCategoriesController,
   updateCategoryController,
 } from "../controllers/category";
+import { validate } from "../middleware/validate";
+import {
+  assignPostToCategorySchema,
+  categoryIdParamSchema,
+  createCategorySchema,
+  updateCategorySchema,
+} from "../validators/categories";
+import { requireAdmin } from "../middleware/auth";
 
 const router = express.Router();
 
 router.get("/", getCategoriesController);
-router.post("/create", createCategoryController);
-router.patch("/update/:categoryId", updateCategoryController);
-router.delete("/delete/:categoryId", deleteCategoryController);
-router.post("/assign", assignPostToCategoryController);
+router.post(
+  "/create",
+  requireAdmin,
+  validate(createCategorySchema),
+  createCategoryController,
+);
+router.patch(
+  "/update/:categoryId",
+  requireAdmin,
+  validate(updateCategorySchema),
+  updateCategoryController,
+);
+router.delete(
+  "/delete/:categoryId",
+  requireAdmin,
+  validate(categoryIdParamSchema),
+  deleteCategoryController,
+);
+router.post(
+  "/assign",
+  validate(assignPostToCategorySchema),
+  assignPostToCategoryController,
+);
 
 export default router;

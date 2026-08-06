@@ -2,11 +2,44 @@ import { prisma } from "../prisma";
 import { byteship } from "../lib/byteship";
 
 export const getPosts = () =>
-  prisma.post.findMany({
-    where: {
-      published: true,
-    },
-  });
+  prisma.post
+    .findMany({
+      where: {
+        published: true,
+      },
+      include: {
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
+      },
+    })
+    .then((posts) =>
+      posts.map(({ _count, ...post }) => ({
+        ...post,
+        likesCount: _count.likes,
+      })),
+    );
+
+export const getSinglePost = (postId: string) =>
+  prisma.post
+    .findUniqueOrThrow({
+      where: {
+        id: postId,
+      },
+      include: {
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
+      },
+    })
+    .then(({ _count, ...post }) => ({
+      ...post,
+      likesCount: _count.likes,
+    }));
 
 export const uploadImage = ({ file, path }: { path: string; file: any }) =>
   byteship.upload(file, {
@@ -82,13 +115,6 @@ export const updatePost = ({
 
 export const deletePost = (postId: string) =>
   prisma.post.delete({
-    where: {
-      id: postId,
-    },
-  });
-
-export const getSinglePost = (postId: string) =>
-  prisma.post.findUniqueOrThrow({
     where: {
       id: postId,
     },

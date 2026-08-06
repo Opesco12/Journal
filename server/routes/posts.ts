@@ -15,6 +15,8 @@ import {
   postIdParamSchema,
   updatePostSchema,
 } from "../validators/posts";
+import { likePostController } from "../controllers/likes";
+import { likePostSchema } from "../validators/likes";
 
 const router = express.Router();
 
@@ -39,5 +41,7 @@ router.patch(
 );
 router.delete("/delete/:postId", deletePostController);
 router.post("/create", validate(createPostSchema), createPostController);
+
+router.post("/like", validate(likePostSchema), likePostController);
 
 export default router;
