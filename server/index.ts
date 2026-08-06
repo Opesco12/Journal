@@ -4,6 +4,7 @@ import multer from "multer";
 import { errorHandler } from "./middleware/error";
 import authRoutes from "./routes/auth";
 import posts from "./routes/posts";
+import categoryRoutes from "./routes/category";
 import { requireAuth } from "./middleware/auth";
 
 const upload = multer({ dest: "uploads/" });
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", requireAuth, upload.array("images"), posts);
+app.use("/api/category", categoryRoutes);
 
 // error handling middleware
 app.use(errorHandler);
