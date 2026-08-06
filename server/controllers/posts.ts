@@ -1,11 +1,12 @@
 import type { Request, Response } from "express";
-import { prisma } from "../prisma";
+import { getAuthenticatedUserId } from "../middleware/auth";
 import {
   createNewPost,
   deletePost,
   getDraftPosts,
   getPosts,
   getSinglePost,
+  getUserPosts,
   publishDraftPost,
   unPublishPost,
   updatePost,
@@ -26,6 +27,7 @@ export const getAllPublishedPostsController = async (
 
 export const createPostController = async (req: Request, res: Response) => {
   const { title, body, images: bodyImages } = req.body;
+  const userId = getAuthenticatedUserId(req);
   const files = (req.files as Express.Multer.File[]) || [];
 
   const existingImageUrls: string[] = !bodyImages
@@ -47,6 +49,7 @@ export const createPostController = async (req: Request, res: Response) => {
     title,
     body,
     images: images as string[],
+    userId,
   });
 
   console.log("new post created: ", post);
@@ -58,8 +61,19 @@ export const createPostController = async (req: Request, res: Response) => {
 };
 
 export const draftPostsController = async (req: Request, res: Response) => {
-  const posts = await getDraftPosts();
+  const userId = getAuthenticatedUserId(req);
+
+  const posts = await getDraftPosts(userId);
   console.log("drafts running: ", posts);
+  res.json({
+    success: true,
+    posts,
+  });
+};
+
+export const getUserPostsController = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const posts = await getUserPosts(userId as string);
   res.json({
     success: true,
     posts,

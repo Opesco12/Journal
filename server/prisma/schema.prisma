@@ -29,6 +29,7 @@ model User {
   comments      Comment[]
   likes         Like[]
   bookmarks     Bookmark[]
+  posts         Post[]
 
   @@unique([email])
   @@map("user")
@@ -47,6 +48,9 @@ model Post {
   published      Boolean        @default(false)
   postCategories PostCategory[]
   bookmarks      Bookmark[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Bookmark {

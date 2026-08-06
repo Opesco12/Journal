@@ -41,6 +41,12 @@ export const postIdParamSchema = z.object({
   }),
 });
 
+export const UserIdParamSchema = z.object({
+  params: z.object({
+    userId: z.string().trim().cuid("Invalid post ID"),
+  }),
+});
+
 export const updatePostSchema = z
   .object({
     params: z.object({

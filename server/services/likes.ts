@@ -13,3 +13,19 @@ export const likePost = ({
       userId,
     },
   });
+
+export const unlikePost = ({
+  postId,
+  userId,
+}: {
+  postId: string;
+  userId: string;
+}) =>
+  prisma.like.delete({
+    where: {
+      postId_userId: {
+        postId,
+        userId,
+      },
+    },
+  });

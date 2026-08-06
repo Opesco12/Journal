@@ -7,6 +7,18 @@ export type HttpError = Error & {
   statusCode?: number;
 };
 
+export const getAuthenticatedUserId = (req: Request) => {
+  const userId = req.user?.id;
+
+  if (!userId) {
+    const error: HttpError = new Error("Unauthenticated");
+    error.status = 401;
+    throw error;
+  }
+
+  return userId;
+};
+
 export const requireAuth = async (
   req: Request,
   res: Response,

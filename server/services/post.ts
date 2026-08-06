@@ -51,23 +51,34 @@ export const createNewPost = ({
   title,
   body,
   images,
+  userId,
 }: {
   title: string;
   body: string;
   images: string[];
+  userId: string;
 }) =>
   prisma.post.create({
     data: {
       title,
       body,
       images,
+      userId,
     },
   });
 
-export const getDraftPosts = () =>
+export const getDraftPosts = (userId: string) =>
   prisma.post.findMany({
     where: {
+      userId,
       published: false,
+    },
+  });
+
+export const getUserPosts = (userId: string) =>
+  prisma.post.findMany({
+    where: {
+      userId,
     },
   });
 

@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
-import { likePost } from "../services/likes";
+import { getAuthenticatedUserId } from "../middleware/auth";
+import { likePost, unlikePost } from "../services/likes";
 
 export const likePostController = async (req: Request, res: Response) => {
-  const { postId, userId } = req.body;
+  const { postId } = req.body;
+  const userId = getAuthenticatedUserId(req);
 
   const likedPost = await likePost({ postId, userId });
 
@@ -10,5 +12,18 @@ export const likePostController = async (req: Request, res: Response) => {
   res.json({
     success: true,
     message: "Post liked",
+  });
+};
+
+export const unlikePostController = async (req: Request, res: Response) => {
+  const { postId } = req.body;
+  const userId = getAuthenticatedUserId(req);
+
+  const unlikedPost = await unlikePost({ postId, userId });
+
+  console.log("Unliked post: ", unlikedPost);
+  res.json({
+    success: true,
+    message: "Post unliked",
   });
 };
