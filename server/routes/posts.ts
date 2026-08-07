@@ -4,6 +4,7 @@ import {
   deletePostController,
   draftPostsController,
   getAllPublishedPostsController,
+  getPostsByCategoryController,
   getSinglePostController,
   publishPostController,
   updatePostController,
@@ -17,6 +18,7 @@ import {
   updatePostSchema,
   UserIdParamSchema,
 } from "../validators/posts";
+import { categoryIdParamSchema } from "../validators/categories";
 import { likePostController, unlikePostController } from "../controllers/likes";
 import {
   bookmarkController,
@@ -28,6 +30,11 @@ const router = express.Router();
 
 router.get("/", getAllPublishedPostsController);
 router.get("/drafts", draftPostsController);
+router.get(
+  "/category/:categoryId",
+  validate(categoryIdParamSchema),
+  getPostsByCategoryController,
+);
 router.get(
   "/user/:userId",
   validate(UserIdParamSchema),
@@ -71,7 +78,5 @@ router.delete(
   validate(postIdParamSchema),
   removeBookmarkController,
 );
-
-//TODO: Add route for getting posts by category
 
 export default router;

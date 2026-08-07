@@ -4,6 +4,7 @@ import {
   createNewPost,
   deletePost,
   getDraftPosts,
+  getPostsByCategory,
   getPosts,
   getSinglePost,
   getUserPosts,
@@ -18,6 +19,19 @@ export const getAllPublishedPostsController = async (
   res: Response,
 ) => {
   const posts = await getPosts();
+
+  res.json({
+    success: true,
+    posts,
+  });
+};
+
+export const getPostsByCategoryController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { categoryId } = req.params;
+  const posts = await getPostsByCategory(categoryId as string);
 
   res.json({
     success: true,

@@ -22,6 +22,32 @@ export const getPosts = () =>
       })),
     );
 
+export const getPostsByCategory = (categoryId: string) =>
+  prisma.post
+    .findMany({
+      where: {
+        published: true,
+        postCategories: {
+          some: {
+            categoryId,
+          },
+        },
+      },
+      include: {
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
+      },
+    })
+    .then((posts) =>
+      posts.map(({ _count, ...post }) => ({
+        ...post,
+        likesCount: _count.likes,
+      })),
+    );
+
 export const getSinglePost = (postId: string) =>
   prisma.post
     .findUniqueOrThrow({
