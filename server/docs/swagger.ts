@@ -68,6 +68,18 @@ const cuidParam = (name: string, description: string) => ({
   },
 });
 
+const searchQueryParam = (name: string, description: string) => ({
+  name,
+  in: "query",
+  required: true,
+  description,
+  schema: {
+    type: "string",
+    minLength: 1,
+    maxLength: 100,
+  },
+});
+
 const routeDocs: RouteDoc[] = [
   {
     method: "post",
@@ -138,6 +150,32 @@ const routeDocs: RouteDoc[] = [
     security: authSecurity,
     responses: {
       "200": successResponse("Draft posts returned"),
+      "401": errorResponses["401"],
+    },
+  },
+  {
+    method: "get",
+    path: "/api/posts/search",
+    tags: ["Posts"],
+    summary: "Search published posts by title",
+    security: authSecurity,
+    parameters: [searchQueryParam("title", "Title text to search for")],
+    responses: {
+      "200": successResponse("Matching posts returned"),
+      "400": errorResponses["400"],
+      "401": errorResponses["401"],
+    },
+  },
+  {
+    method: "get",
+    path: "/api/posts/drafts/search",
+    tags: ["Posts"],
+    summary: "Search current user's unpublished posts by title",
+    security: authSecurity,
+    parameters: [searchQueryParam("title", "Title text to search for")],
+    responses: {
+      "200": successResponse("Matching draft posts returned"),
+      "400": errorResponses["400"],
       "401": errorResponses["401"],
     },
   },
@@ -398,6 +436,19 @@ const routeDocs: RouteDoc[] = [
       "400": errorResponses["400"],
     },
   },
+  {
+    method: "get",
+    path: "/api/users/search",
+    tags: ["Users"],
+    summary: "Search users by name",
+    security: authSecurity,
+    parameters: [searchQueryParam("name", "Name text to search for")],
+    responses: {
+      "200": successResponse("Matching users returned"),
+      "400": errorResponses["400"],
+      "401": errorResponses["401"],
+    },
+  },
 ];
 
 const toOpenApiPath = (path: string) =>
@@ -439,6 +490,7 @@ export const swaggerSpec = {
     { name: "Auth" },
     { name: "Posts" },
     { name: "Categories" },
+    { name: "Users" },
     { name: "Likes" },
     { name: "Bookmarks" },
   ],

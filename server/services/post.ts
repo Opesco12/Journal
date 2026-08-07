@@ -48,6 +48,57 @@ export const getPostsByCategory = (categoryId: string) =>
       })),
     );
 
+export const searchPostsByTitle = (title: string) =>
+  prisma.post
+    .findMany({
+      where: {
+        published: true,
+        title: {
+          contains: title,
+          mode: "insensitive",
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 20,
+      include: {
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
+      },
+    })
+    .then((posts) =>
+      posts.map(({ _count, ...post }) => ({
+        ...post,
+        likesCount: _count.likes,
+      })),
+    );
+
+export const searchDraftPostsByTitle = ({
+  title,
+  userId,
+}: {
+  title: string;
+  userId: string;
+}) =>
+  prisma.post.findMany({
+    where: {
+      userId,
+      published: false,
+      title: {
+        contains: title,
+        mode: "insensitive",
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 20,
+  });
+
 export const getSinglePost = (postId: string) =>
   prisma.post
     .findUniqueOrThrow({

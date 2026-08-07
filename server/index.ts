@@ -5,6 +5,7 @@ import { errorHandler } from "./middleware/error";
 import authRoutes from "./routes/auth";
 import posts from "./routes/posts";
 import categoryRoutes from "./routes/category";
+import userRoutes from "./routes/users";
 import { requireAuth } from "./middleware/auth";
 import { swaggerHtml, swaggerSpec } from "./docs/swagger";
 
@@ -24,6 +25,7 @@ app.get("/api/docs", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", requireAuth, upload.array("images"), posts);
+app.use("/api/users", requireAuth, userRoutes);
 app.use("/api/category", categoryRoutes);
 
 // error handling middleware

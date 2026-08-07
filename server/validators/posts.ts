@@ -47,6 +47,16 @@ export const UserIdParamSchema = z.object({
   }),
 });
 
+export const searchPostsSchema = z.object({
+  query: z.object({
+    title: z
+      .string()
+      .trim()
+      .min(1, "Search title is required")
+      .max(100, "Search title must be under 100 characters"),
+  }),
+});
+
 export const updatePostSchema = z
   .object({
     params: z.object({

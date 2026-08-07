@@ -9,6 +9,8 @@ import {
   getSinglePost,
   getUserPosts,
   publishDraftPost,
+  searchDraftPostsByTitle,
+  searchPostsByTitle,
   unPublishPost,
   updatePost,
   uploadImage,
@@ -19,6 +21,33 @@ export const getAllPublishedPostsController = async (
   res: Response,
 ) => {
   const posts = await getPosts();
+
+  res.json({
+    success: true,
+    posts,
+  });
+};
+
+export const searchPostsController = async (req: Request, res: Response) => {
+  const { title } = req.query;
+  const posts = await searchPostsByTitle(title as string);
+
+  res.json({
+    success: true,
+    posts,
+  });
+};
+
+export const searchDraftPostsController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { title } = req.query;
+  const userId = getAuthenticatedUserId(req);
+  const posts = await searchDraftPostsByTitle({
+    title: title as string,
+    userId,
+  });
 
   res.json({
     success: true,

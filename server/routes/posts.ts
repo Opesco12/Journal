@@ -7,6 +7,8 @@ import {
   getPostsByCategoryController,
   getSinglePostController,
   publishPostController,
+  searchDraftPostsController,
+  searchPostsController,
   updatePostController,
   unpublishPostController,
   getUserPostsController,
@@ -15,6 +17,7 @@ import { validate } from "../middleware/validate";
 import {
   createPostSchema,
   postIdParamSchema,
+  searchPostsSchema,
   updatePostSchema,
   UserIdParamSchema,
 } from "../validators/posts";
@@ -30,6 +33,12 @@ const router = express.Router();
 
 router.get("/", getAllPublishedPostsController);
 router.get("/drafts", draftPostsController);
+router.get("/search", validate(searchPostsSchema), searchPostsController);
+router.get(
+  "/drafts/search",
+  validate(searchPostsSchema),
+  searchDraftPostsController,
+);
 router.get(
   "/category/:categoryId",
   validate(categoryIdParamSchema),

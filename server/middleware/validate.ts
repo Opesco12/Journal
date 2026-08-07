@@ -21,6 +21,7 @@ export const validate =
     const data = parsed.data as {
       body?: unknown;
       params?: typeof req.params;
+      query?: typeof req.query;
     };
 
     if ("body" in data) {
@@ -29,6 +30,10 @@ export const validate =
 
     if ("params" in data && data.params) {
       req.params = data.params;
+    }
+
+    if ("query" in data && data.query) {
+      req.query = data.query;
     }
 
     next();
