@@ -43,7 +43,7 @@ export const postIdParamSchema = z.object({
 
 export const UserIdParamSchema = z.object({
   params: z.object({
-    userId: z.string().trim().cuid("Invalid post ID"),
+    userId: z.string().trim().min(1, "User ID is required"),
   }),
 });
 

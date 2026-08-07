@@ -18,7 +18,11 @@ import {
   UserIdParamSchema,
 } from "../validators/posts";
 import { likePostController, unlikePostController } from "../controllers/likes";
-import { likePostSchema } from "../validators/likes";
+import {
+  bookmarkController,
+  removeBookmarkController,
+  userBookmarksController,
+} from "../controllers/bookmarks";
 
 const router = express.Router();
 
@@ -29,6 +33,7 @@ router.get(
   validate(UserIdParamSchema),
   getUserPostsController,
 );
+router.get("/bookmarks", userBookmarksController);
 router.get("/:postId", validate(postIdParamSchema), getSinglePostController);
 
 router.patch(
@@ -49,13 +54,24 @@ router.patch(
 router.delete("/delete/:postId", deletePostController);
 router.post("/create", validate(createPostSchema), createPostController);
 
-router.post("/like", validate(likePostSchema), likePostController);
-router.delete("/unlike", validate(likePostSchema), unlikePostController);
+router.post("/like/:postId", validate(postIdParamSchema), likePostController);
+router.delete(
+  "/unlike/:postId",
+  validate(postIdParamSchema),
+  unlikePostController,
+);
+
+router.post(
+  "/bookmark/:postId",
+  validate(postIdParamSchema),
+  bookmarkController,
+);
+router.delete(
+  "/unBookmark/:postId",
+  validate(postIdParamSchema),
+  removeBookmarkController,
+);
 
 //TODO: Add route for getting posts by category
-// TODO: bookmark post route
-//TODO: unbookmark post route
-
-//TODO: posts bookmarked by user route
 
 export default router;
