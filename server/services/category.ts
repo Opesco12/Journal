@@ -1,6 +1,34 @@
 import { prisma } from "../prisma";
+import {
+  buildPagination,
+  getPaginationArgs,
+  type PaginationInput,
+} from "../utils/pagination";
 
-export const getCategories = () => prisma.category.findMany();
+type SortOrder = "asc" | "desc";
+type CategorySortBy = "name" | "id";
+
+export const getCategories = ({
+  sortBy,
+  sortOrder,
+  page,
+  limit,
+}: {
+  sortBy: CategorySortBy;
+  sortOrder: SortOrder;
+} & PaginationInput) =>
+  Promise.all([
+    prisma.category.findMany({
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      ...getPaginationArgs({ page, limit }),
+    }),
+    prisma.category.count(),
+  ]).then(([categories, total]) => ({
+    categories,
+    pagination: buildPagination({ page, limit, total }),
+  }));
 
 export const createCategory = (category: string) =>
   prisma.category.create({

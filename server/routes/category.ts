@@ -9,6 +9,7 @@ import {
 import { validate } from "../middleware/validate";
 import {
   assignPostToCategorySchema,
+  categorySortSchema,
   categoryIdParamSchema,
   createCategorySchema,
   updateCategorySchema,
@@ -17,7 +18,7 @@ import { requireAdmin } from "../middleware/auth";
 
 const router = express.Router();
 
-router.get("/", getCategoriesController);
+router.get("/", validate(categorySortSchema), getCategoriesController);
 router.post(
   "/create",
   requireAdmin,

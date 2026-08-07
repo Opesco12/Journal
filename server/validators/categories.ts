@@ -10,6 +10,15 @@ export const createCategorySchema = z.object({
   }),
 });
 
+export const categorySortSchema = z.object({
+  query: z.object({
+    sortBy: z.enum(["name", "id"]).optional().default("name"),
+    sortOrder: z.enum(["asc", "desc"]).optional().default("asc"),
+    page: z.coerce.number().int().min(1).optional().default(1),
+    limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+  }),
+});
+
 export const categoryIdParamSchema = z.object({
   params: z.object({
     categoryId: z.string().trim().cuid("Invalid category ID"),

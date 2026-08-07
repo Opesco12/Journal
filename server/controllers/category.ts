@@ -8,11 +8,18 @@ import {
 } from "../services/category";
 
 export const getCategoriesController = async (req: Request, res: Response) => {
-  const categories = await getCategories();
+  const { sortBy, sortOrder, page, limit } = req.query;
+  const { categories, pagination } = await getCategories({
+    sortBy: sortBy as "name" | "id",
+    sortOrder: sortOrder as "asc" | "desc",
+    page: page as number,
+    limit: limit as number,
+  });
 
   res.json({
     success: true,
     categories,
+    pagination,
   });
 };
 

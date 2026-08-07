@@ -31,8 +31,34 @@ const createPostBodySchema = z.object({
     .transform((val) => (!val ? [] : Array.isArray(val) ? val : [val])),
 });
 
+const postSortQueryShape = {
+  sortBy: z.enum(["createdAt", "updateAt", "title"]).optional().default("createdAt"),
+  sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
+};
+
+const paginationQueryShape = {
+  page: z.coerce.number().int().min(1).optional().default(1),
+  limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+};
+
+const postListQueryShape = {
+  ...postSortQueryShape,
+  ...paginationQueryShape,
+};
+
 export const createPostSchema = z.object({
   body: createPostBodySchema,
+});
+
+export const postSortSchema = z.object({
+  query: z.object(postListQueryShape),
+});
+
+export const categoryPostsSortSchema = z.object({
+  params: z.object({
+    categoryId: z.string().trim().cuid("Invalid category ID"),
+  }),
+  query: z.object(postListQueryShape),
 });
 
 export const postIdParamSchema = z.object({
@@ -47,6 +73,13 @@ export const UserIdParamSchema = z.object({
   }),
 });
 
+export const userPostsSortSchema = z.object({
+  params: z.object({
+    userId: z.string().trim().min(1, "User ID is required"),
+  }),
+  query: z.object(postListQueryShape),
+});
+
 export const searchPostsSchema = z.object({
   query: z.object({
     title: z
@@ -54,6 +87,7 @@ export const searchPostsSchema = z.object({
       .trim()
       .min(1, "Search title is required")
       .max(100, "Search title must be under 100 characters"),
+    ...postListQueryShape,
   }),
 });
 

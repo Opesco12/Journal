@@ -1,12 +1,38 @@
 import { prisma } from "../prisma";
 import { byteship } from "../lib/byteship";
+import {
+  buildPagination,
+  getPaginationArgs,
+  type PaginationInput,
+} from "../utils/pagination";
 
-export const getPosts = () =>
-  prisma.post
-    .findMany({
-      where: {
-        published: true,
-      },
+type SortOrder = "asc" | "desc";
+type PostSortBy = "createdAt" | "updateAt" | "title";
+type PostSort = {
+  sortBy: PostSortBy;
+  sortOrder: SortOrder;
+};
+
+const postOrderBy = ({ sortBy, sortOrder }: PostSort) => ({
+  [sortBy]: sortOrder,
+});
+
+const withLikesCount = <T extends { _count: { likes: number } }>(posts: T[]) =>
+  posts.map(({ _count, ...post }) => ({
+    ...post,
+    likesCount: _count.likes,
+  }));
+
+export const getPosts = (options: PostSort & PaginationInput) => {
+  const where = {
+    published: true,
+  };
+
+  return Promise.all([
+    prisma.post.findMany({
+      where,
+      orderBy: postOrderBy(options),
+      ...getPaginationArgs(options),
       include: {
         _count: {
           select: {
@@ -14,25 +40,38 @@ export const getPosts = () =>
           },
         },
       },
-    })
-    .then((posts) =>
-      posts.map(({ _count, ...post }) => ({
-        ...post,
-        likesCount: _count.likes,
-      })),
-    );
+    }),
+    prisma.post.count({ where }),
+  ]).then(([posts, total]) => ({
+    posts: withLikesCount(posts),
+    pagination: buildPagination({ ...options, total }),
+  }));
+};
 
-export const getPostsByCategory = (categoryId: string) =>
-  prisma.post
-    .findMany({
-      where: {
-        published: true,
-        postCategories: {
-          some: {
-            categoryId,
-          },
-        },
+export const getPostsByCategory = ({
+  categoryId,
+  sortBy,
+  sortOrder,
+  page,
+  limit,
+}: {
+  categoryId: string;
+} & PostSort &
+  PaginationInput) => {
+  const where = {
+    published: true,
+    postCategories: {
+      some: {
+        categoryId,
       },
+    },
+  };
+
+  return Promise.all([
+    prisma.post.findMany({
+      where,
+      orderBy: postOrderBy({ sortBy, sortOrder }),
+      ...getPaginationArgs({ page, limit }),
       include: {
         _count: {
           select: {
@@ -40,28 +79,37 @@ export const getPostsByCategory = (categoryId: string) =>
           },
         },
       },
-    })
-    .then((posts) =>
-      posts.map(({ _count, ...post }) => ({
-        ...post,
-        likesCount: _count.likes,
-      })),
-    );
+    }),
+    prisma.post.count({ where }),
+  ]).then(([posts, total]) => ({
+    posts: withLikesCount(posts),
+    pagination: buildPagination({ page, limit, total }),
+  }));
+};
 
-export const searchPostsByTitle = (title: string) =>
-  prisma.post
-    .findMany({
-      where: {
-        published: true,
-        title: {
-          contains: title,
-          mode: "insensitive",
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 20,
+export const searchPostsByTitle = ({
+  title,
+  sortBy,
+  sortOrder,
+  page,
+  limit,
+}: {
+  title: string;
+} & PostSort &
+  PaginationInput) => {
+  const where = {
+    published: true,
+    title: {
+      contains: title,
+      mode: "insensitive" as const,
+    },
+  };
+
+  return Promise.all([
+    prisma.post.findMany({
+      where,
+      orderBy: postOrderBy({ sortBy, sortOrder }),
+      ...getPaginationArgs({ page, limit }),
       include: {
         _count: {
           select: {
@@ -69,35 +117,47 @@ export const searchPostsByTitle = (title: string) =>
           },
         },
       },
-    })
-    .then((posts) =>
-      posts.map(({ _count, ...post }) => ({
-        ...post,
-        likesCount: _count.likes,
-      })),
-    );
+    }),
+    prisma.post.count({ where }),
+  ]).then(([posts, total]) => ({
+    posts: withLikesCount(posts),
+    pagination: buildPagination({ page, limit, total }),
+  }));
+};
 
 export const searchDraftPostsByTitle = ({
   title,
   userId,
+  sortBy,
+  sortOrder,
+  page,
+  limit,
 }: {
   title: string;
   userId: string;
-}) =>
-  prisma.post.findMany({
-    where: {
-      userId,
-      published: false,
-      title: {
-        contains: title,
-        mode: "insensitive",
-      },
+} & PostSort &
+  PaginationInput) => {
+  const where = {
+    userId,
+    published: false,
+    title: {
+      contains: title,
+      mode: "insensitive" as const,
     },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 20,
-  });
+  };
+
+  return Promise.all([
+    prisma.post.findMany({
+      where,
+      orderBy: postOrderBy({ sortBy, sortOrder }),
+      ...getPaginationArgs({ page, limit }),
+    }),
+    prisma.post.count({ where }),
+  ]).then(([posts, total]) => ({
+    posts,
+    pagination: buildPagination({ page, limit, total }),
+  }));
+};
 
 export const getSinglePost = (postId: string) =>
   prisma.post
@@ -144,20 +204,60 @@ export const createNewPost = ({
     },
   });
 
-export const getDraftPosts = (userId: string) =>
-  prisma.post.findMany({
-    where: {
-      userId,
-      published: false,
-    },
-  });
+export const getDraftPosts = ({
+  userId,
+  sortBy,
+  sortOrder,
+  page,
+  limit,
+}: {
+  userId: string;
+} & PostSort &
+  PaginationInput) => {
+  const where = {
+    userId,
+    published: false,
+  };
 
-export const getUserPosts = (userId: string) =>
-  prisma.post.findMany({
-    where: {
-      userId,
-    },
-  });
+  return Promise.all([
+    prisma.post.findMany({
+      where,
+      orderBy: postOrderBy({ sortBy, sortOrder }),
+      ...getPaginationArgs({ page, limit }),
+    }),
+    prisma.post.count({ where }),
+  ]).then(([posts, total]) => ({
+    posts,
+    pagination: buildPagination({ page, limit, total }),
+  }));
+};
+
+export const getUserPosts = ({
+  userId,
+  sortBy,
+  sortOrder,
+  page,
+  limit,
+}: {
+  userId: string;
+} & PostSort &
+  PaginationInput) => {
+  const where = {
+    userId,
+  };
+
+  return Promise.all([
+    prisma.post.findMany({
+      where,
+      orderBy: postOrderBy({ sortBy, sortOrder }),
+      ...getPaginationArgs({ page, limit }),
+    }),
+    prisma.post.count({ where }),
+  ]).then(([posts, total]) => ({
+    posts,
+    pagination: buildPagination({ page, limit, total }),
+  }));
+};
 
 export const publishDraftPost = (postId: string) =>
   prisma.post.update({

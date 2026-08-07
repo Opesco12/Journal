@@ -15,13 +15,14 @@ import {
 } from "../controllers/posts";
 import { validate } from "../middleware/validate";
 import {
+  categoryPostsSortSchema,
   createPostSchema,
+  postSortSchema,
   postIdParamSchema,
   searchPostsSchema,
   updatePostSchema,
-  UserIdParamSchema,
+  userPostsSortSchema,
 } from "../validators/posts";
-import { categoryIdParamSchema } from "../validators/categories";
 import { likePostController, unlikePostController } from "../controllers/likes";
 import {
   bookmarkController,
@@ -31,8 +32,8 @@ import {
 
 const router = express.Router();
 
-router.get("/", getAllPublishedPostsController);
-router.get("/drafts", draftPostsController);
+router.get("/", validate(postSortSchema), getAllPublishedPostsController);
+router.get("/drafts", validate(postSortSchema), draftPostsController);
 router.get("/search", validate(searchPostsSchema), searchPostsController);
 router.get(
   "/drafts/search",
@@ -41,15 +42,15 @@ router.get(
 );
 router.get(
   "/category/:categoryId",
-  validate(categoryIdParamSchema),
+  validate(categoryPostsSortSchema),
   getPostsByCategoryController,
 );
 router.get(
   "/user/:userId",
-  validate(UserIdParamSchema),
+  validate(userPostsSortSchema),
   getUserPostsController,
 );
-router.get("/bookmarks", userBookmarksController);
+router.get("/bookmarks", validate(postSortSchema), userBookmarksController);
 router.get("/:postId", validate(postIdParamSchema), getSinglePostController);
 
 router.patch(

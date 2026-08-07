@@ -80,6 +80,83 @@ const searchQueryParam = (name: string, description: string) => ({
   },
 });
 
+const sortQueryParams = ({
+  sortByValues,
+  defaultSortBy,
+  defaultSortOrder,
+}: {
+  sortByValues: string[];
+  defaultSortBy: string;
+  defaultSortOrder: "asc" | "desc";
+}) => [
+  {
+    name: "sortBy",
+    in: "query",
+    required: false,
+    description: "Field to sort by",
+    schema: {
+      type: "string",
+      enum: sortByValues,
+      default: defaultSortBy,
+    },
+  },
+  {
+    name: "sortOrder",
+    in: "query",
+    required: false,
+    description: "Sort direction",
+    schema: {
+      type: "string",
+      enum: ["asc", "desc"],
+      default: defaultSortOrder,
+    },
+  },
+];
+
+const paginationQueryParams = [
+  {
+    name: "page",
+    in: "query",
+    required: false,
+    description: "Page number",
+    schema: {
+      type: "integer",
+      minimum: 1,
+      default: 1,
+    },
+  },
+  {
+    name: "limit",
+    in: "query",
+    required: false,
+    description: "Items per page",
+    schema: {
+      type: "integer",
+      minimum: 1,
+      maximum: 100,
+      default: 20,
+    },
+  },
+];
+
+const postSortParams = sortQueryParams({
+  sortByValues: ["createdAt", "updateAt", "title"],
+  defaultSortBy: "createdAt",
+  defaultSortOrder: "desc",
+});
+
+const userSortParams = sortQueryParams({
+  sortByValues: ["name", "firstname", "lastname", "createdAt"],
+  defaultSortBy: "name",
+  defaultSortOrder: "asc",
+});
+
+const categorySortParams = sortQueryParams({
+  sortByValues: ["name", "id"],
+  defaultSortBy: "name",
+  defaultSortOrder: "asc",
+});
+
 const routeDocs: RouteDoc[] = [
   {
     method: "post",
@@ -137,6 +214,7 @@ const routeDocs: RouteDoc[] = [
     tags: ["Posts"],
     summary: "List published posts",
     security: authSecurity,
+    parameters: [...postSortParams, ...paginationQueryParams],
     responses: {
       "200": successResponse("Published posts returned"),
       "401": errorResponses["401"],
@@ -148,6 +226,7 @@ const routeDocs: RouteDoc[] = [
     tags: ["Posts"],
     summary: "List current user's draft posts",
     security: authSecurity,
+    parameters: [...postSortParams, ...paginationQueryParams],
     responses: {
       "200": successResponse("Draft posts returned"),
       "401": errorResponses["401"],
@@ -159,7 +238,11 @@ const routeDocs: RouteDoc[] = [
     tags: ["Posts"],
     summary: "Search published posts by title",
     security: authSecurity,
-    parameters: [searchQueryParam("title", "Title text to search for")],
+    parameters: [
+      searchQueryParam("title", "Title text to search for"),
+      ...postSortParams,
+      ...paginationQueryParams,
+    ],
     responses: {
       "200": successResponse("Matching posts returned"),
       "400": errorResponses["400"],
@@ -172,7 +255,11 @@ const routeDocs: RouteDoc[] = [
     tags: ["Posts"],
     summary: "Search current user's unpublished posts by title",
     security: authSecurity,
-    parameters: [searchQueryParam("title", "Title text to search for")],
+    parameters: [
+      searchQueryParam("title", "Title text to search for"),
+      ...postSortParams,
+      ...paginationQueryParams,
+    ],
     responses: {
       "200": successResponse("Matching draft posts returned"),
       "400": errorResponses["400"],
@@ -185,7 +272,11 @@ const routeDocs: RouteDoc[] = [
     tags: ["Posts"],
     summary: "List published posts by category",
     security: authSecurity,
-    parameters: [cuidParam("categoryId", "Category ID")],
+    parameters: [
+      cuidParam("categoryId", "Category ID"),
+      ...postSortParams,
+      ...paginationQueryParams,
+    ],
     responses: {
       "200": successResponse("Category posts returned"),
       "400": errorResponses["400"],
@@ -206,6 +297,8 @@ const routeDocs: RouteDoc[] = [
         description: "User ID",
         schema: { type: "string" },
       },
+      ...postSortParams,
+      ...paginationQueryParams,
     ],
     responses: {
       "200": successResponse("User posts returned"),
@@ -219,6 +312,7 @@ const routeDocs: RouteDoc[] = [
     tags: ["Bookmarks"],
     summary: "List current user's bookmarked posts",
     security: authSecurity,
+    parameters: [...postSortParams, ...paginationQueryParams],
     responses: {
       "200": successResponse("Bookmarked posts returned"),
       "401": errorResponses["401"],
@@ -370,6 +464,7 @@ const routeDocs: RouteDoc[] = [
     path: "/api/category",
     tags: ["Categories"],
     summary: "List categories",
+    parameters: [...categorySortParams, ...paginationQueryParams],
     responses: {
       "200": successResponse("Categories returned"),
     },
@@ -442,7 +537,11 @@ const routeDocs: RouteDoc[] = [
     tags: ["Users"],
     summary: "Search users by name",
     security: authSecurity,
-    parameters: [searchQueryParam("name", "Name text to search for")],
+    parameters: [
+      searchQueryParam("name", "Name text to search for"),
+      ...userSortParams,
+      ...paginationQueryParams,
+    ],
     responses: {
       "200": successResponse("Matching users returned"),
       "400": errorResponses["400"],

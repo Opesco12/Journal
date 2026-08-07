@@ -27,10 +27,18 @@ export const removeBookmarkController = async (req: Request, res: Response) => {
 
 export const userBookmarksController = async (req: Request, res: Response) => {
   const userId = getAuthenticatedUserId(req);
-  const posts = await getUserBookmarks(userId);
+  const { sortBy, sortOrder, page, limit } = req.query;
+  const { posts, pagination } = await getUserBookmarks({
+    userId,
+    sortBy: sortBy as "createdAt" | "updateAt" | "title",
+    sortOrder: sortOrder as "asc" | "desc",
+    page: page as number,
+    limit: limit as number,
+  });
 
   res.json({
     success: true,
     posts,
+    pagination,
   });
 };

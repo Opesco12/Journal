@@ -20,21 +20,35 @@ export const getAllPublishedPostsController = async (
   req: Request,
   res: Response,
 ) => {
-  const posts = await getPosts();
+  const { sortBy, sortOrder, page, limit } = req.query;
+  const { posts, pagination } = await getPosts({
+    sortBy: sortBy as "createdAt" | "updateAt" | "title",
+    sortOrder: sortOrder as "asc" | "desc",
+    page: page as number,
+    limit: limit as number,
+  });
 
   res.json({
     success: true,
     posts,
+    pagination,
   });
 };
 
 export const searchPostsController = async (req: Request, res: Response) => {
-  const { title } = req.query;
-  const posts = await searchPostsByTitle(title as string);
+  const { title, sortBy, sortOrder, page, limit } = req.query;
+  const { posts, pagination } = await searchPostsByTitle({
+    title: title as string,
+    sortBy: sortBy as "createdAt" | "updateAt" | "title",
+    sortOrder: sortOrder as "asc" | "desc",
+    page: page as number,
+    limit: limit as number,
+  });
 
   res.json({
     success: true,
     posts,
+    pagination,
   });
 };
 
@@ -42,16 +56,21 @@ export const searchDraftPostsController = async (
   req: Request,
   res: Response,
 ) => {
-  const { title } = req.query;
+  const { title, sortBy, sortOrder, page, limit } = req.query;
   const userId = getAuthenticatedUserId(req);
-  const posts = await searchDraftPostsByTitle({
+  const { posts, pagination } = await searchDraftPostsByTitle({
     title: title as string,
     userId,
+    sortBy: sortBy as "createdAt" | "updateAt" | "title",
+    sortOrder: sortOrder as "asc" | "desc",
+    page: page as number,
+    limit: limit as number,
   });
 
   res.json({
     success: true,
     posts,
+    pagination,
   });
 };
 
@@ -60,11 +79,19 @@ export const getPostsByCategoryController = async (
   res: Response,
 ) => {
   const { categoryId } = req.params;
-  const posts = await getPostsByCategory(categoryId as string);
+  const { sortBy, sortOrder, page, limit } = req.query;
+  const { posts, pagination } = await getPostsByCategory({
+    categoryId: categoryId as string,
+    sortBy: sortBy as "createdAt" | "updateAt" | "title",
+    sortOrder: sortOrder as "asc" | "desc",
+    page: page as number,
+    limit: limit as number,
+  });
 
   res.json({
     success: true,
     posts,
+    pagination,
   });
 };
 
@@ -105,21 +132,37 @@ export const createPostController = async (req: Request, res: Response) => {
 
 export const draftPostsController = async (req: Request, res: Response) => {
   const userId = getAuthenticatedUserId(req);
+  const { sortBy, sortOrder, page, limit } = req.query;
 
-  const posts = await getDraftPosts(userId);
+  const { posts, pagination } = await getDraftPosts({
+    userId,
+    sortBy: sortBy as "createdAt" | "updateAt" | "title",
+    sortOrder: sortOrder as "asc" | "desc",
+    page: page as number,
+    limit: limit as number,
+  });
   console.log("drafts running: ", posts);
   res.json({
     success: true,
     posts,
+    pagination,
   });
 };
 
 export const getUserPostsController = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const posts = await getUserPosts(userId as string);
+  const { sortBy, sortOrder, page, limit } = req.query;
+  const { posts, pagination } = await getUserPosts({
+    userId: userId as string,
+    sortBy: sortBy as "createdAt" | "updateAt" | "title",
+    sortOrder: sortOrder as "asc" | "desc",
+    page: page as number,
+    limit: limit as number,
+  });
   res.json({
     success: true,
     posts,
+    pagination,
   });
 };
 
