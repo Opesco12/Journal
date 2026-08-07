@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth";
 import posts from "./routes/posts";
 import categoryRoutes from "./routes/category";
 import { requireAuth } from "./middleware/auth";
+import { swaggerHtml, swaggerSpec } from "./docs/swagger";
 
 const upload = multer({ dest: "uploads/" });
 const app = express();
@@ -13,6 +14,13 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.get("/api/docs.json", (_req, res) => {
+  res.json(swaggerSpec);
+});
+app.get("/api/docs", (_req, res) => {
+  res.type("html").send(swaggerHtml);
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", requireAuth, upload.array("images"), posts);
