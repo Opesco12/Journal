@@ -548,6 +548,22 @@ const routeDocs: RouteDoc[] = [
       "401": errorResponses["401"],
     },
   },
+  {
+    method: "post",
+    path: "/api/users/profile-image",
+    tags: ["Users"],
+    summary: "Upload the current user's profile image",
+    security: authSecurity,
+    requestBody: {
+      required: true,
+      ...multipartContent({ $ref: "#/components/schemas/ProfileImageRequest" }),
+    },
+    responses: {
+      "200": successResponse("Profile image uploaded successfully"),
+      "400": errorResponses["400"],
+      "401": errorResponses["401"],
+    },
+  },
 ];
 
 const toOpenApiPath = (path: string) =>
@@ -671,6 +687,17 @@ export const swaggerSpec = {
         properties: {
           postId: { type: "string", example: "clx123abc456def789ghi012" },
           categoryId: { type: "string", example: "clx123abc456def789ghi012" },
+        },
+      },
+      ProfileImageRequest: {
+        type: "object",
+        required: ["image"],
+        properties: {
+          image: {
+            type: "string",
+            format: "binary",
+            description: "JPEG, PNG, WebP, or GIF image up to 5MB",
+          },
         },
       },
     },

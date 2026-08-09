@@ -1,5 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { type Request, type Response, type NextFunction } from "express";
+import multer from "multer";
 
 type HttpError = Error & {
   status?: number;
@@ -37,6 +38,16 @@ export const errorHandler = (
         message: "A record with this value already exists",
       });
     }
+  }
+
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({
+      success: false,
+      message:
+        err.code === "LIMIT_FILE_SIZE"
+          ? "Profile image must be 5MB or smaller"
+          : err.message,
+    });
   }
 
   const status =
