@@ -773,9 +773,9 @@ const buildPaths = (routes: RouteDoc[]) =>
 export const swaggerSpec = {
   openapi: "3.0.3",
   info: {
-    title: "Blog Server API",
+    title: "Journal API",
     version: "1.0.0",
-    description: "Automatically generated OpenAPI documentation for the blog server.",
+    description: "OpenAPI documentation for Journal API.",
   },
   servers: [
     {
@@ -902,7 +902,7 @@ export const swaggerHtml = `<!doctype html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Blog Server API Docs</title>
+    <title>Journal API Docs</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" />
     <style>
       body {
