@@ -3,10 +3,11 @@ import multer from "multer";
 
 import { errorHandler } from "./middleware/error";
 import authRoutes from "./routes/auth";
+import adminRoutes from "./routes/admin";
 import posts from "./routes/posts";
 import categoryRoutes from "./routes/category";
 import userRoutes from "./routes/users";
-import { requireAuth } from "./middleware/auth";
+import { requireAdmin, requireAuth } from "./middleware/auth";
 import { swaggerHtml, swaggerSpec } from "./docs/swagger";
 
 const upload = multer({ dest: "uploads/" });
@@ -24,6 +25,7 @@ app.get("/api/docs", (_req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", requireAuth, requireAdmin, adminRoutes);
 app.use("/api/posts", requireAuth, upload.array("images"), posts);
 app.use("/api/users", requireAuth, userRoutes);
 app.use("/api/category", categoryRoutes);

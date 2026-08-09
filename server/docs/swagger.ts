@@ -470,10 +470,25 @@ const routeDocs: RouteDoc[] = [
     },
   },
   {
+    method: "get",
+    path: "/api/admin/category",
+    tags: ["Admin"],
+    summary: "List categories",
+    description: "Admin-only category management route.",
+    security: authSecurity,
+    parameters: [...categorySortParams, ...paginationQueryParams],
+    responses: {
+      "200": successResponse("Categories returned"),
+      "401": errorResponses["401"],
+      "403": errorResponses["403"],
+    },
+  },
+  {
     method: "post",
-    path: "/api/category/create",
-    tags: ["Categories"],
+    path: "/api/admin/category/create",
+    tags: ["Admin"],
     summary: "Create a category",
+    description: "Admin-only category management route.",
     security: authSecurity,
     requestBody: {
       required: true,
@@ -482,14 +497,16 @@ const routeDocs: RouteDoc[] = [
     responses: {
       "200": successResponse("Category created successfully"),
       "400": errorResponses["400"],
+      "401": errorResponses["401"],
       "403": errorResponses["403"],
     },
   },
   {
     method: "patch",
-    path: "/api/category/update/:categoryId",
-    tags: ["Categories"],
+    path: "/api/admin/category/update/:categoryId",
+    tags: ["Admin"],
     summary: "Update a category",
+    description: "Admin-only category management route.",
     security: authSecurity,
     parameters: [cuidParam("categoryId", "Category ID")],
     requestBody: {
@@ -499,29 +516,34 @@ const routeDocs: RouteDoc[] = [
     responses: {
       "200": successResponse("Category updated successfully"),
       "400": errorResponses["400"],
+      "401": errorResponses["401"],
       "403": errorResponses["403"],
       "404": errorResponses["404"],
     },
   },
   {
     method: "delete",
-    path: "/api/category/delete/:categoryId",
-    tags: ["Categories"],
+    path: "/api/admin/category/delete/:categoryId",
+    tags: ["Admin"],
     summary: "Delete a category",
+    description: "Admin-only category management route.",
     security: authSecurity,
     parameters: [cuidParam("categoryId", "Category ID")],
     responses: {
       "200": successResponse("Category deleted successfully"),
       "400": errorResponses["400"],
+      "401": errorResponses["401"],
       "403": errorResponses["403"],
       "404": errorResponses["404"],
     },
   },
   {
     method: "post",
-    path: "/api/category/assign",
-    tags: ["Categories"],
+    path: "/api/admin/category/assign",
+    tags: ["Admin"],
     summary: "Assign a post to a category",
+    description: "Admin-only category management route.",
+    security: authSecurity,
     requestBody: {
       required: true,
       ...jsonContent({ $ref: "#/components/schemas/AssignPostCategoryRequest" }),
@@ -529,6 +551,8 @@ const routeDocs: RouteDoc[] = [
     responses: {
       "200": successResponse("Post assigned to category successfully"),
       "400": errorResponses["400"],
+      "401": errorResponses["401"],
+      "403": errorResponses["403"],
     },
   },
   {
@@ -603,6 +627,7 @@ export const swaggerSpec = {
   ],
   tags: [
     { name: "Auth" },
+    { name: "Admin" },
     { name: "Posts" },
     { name: "Categories" },
     { name: "Users" },
