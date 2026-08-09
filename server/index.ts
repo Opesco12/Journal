@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import cors from "cors";
 
 import { errorHandler } from "./middleware/error";
 import authRoutes from "./routes/auth";
@@ -14,6 +15,13 @@ const upload = multer({ dest: "uploads/" });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(
+  cors({
+    origin: "*",
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
