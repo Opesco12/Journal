@@ -55,9 +55,10 @@ const HomePage = () => (
         </Link>
 
         <div className="hidden items-center gap-9 text-sm font-medium text-muted-foreground md:flex">
+          <Link to="/posts">Posts</Link>
           <a href="#features">Features</a>
-          <a href="#latest">Latest</a>
-          <a href="#newsletter">Newsletter</a>
+          <Link to="/categories">Categories</Link>
+          <a href="#latest">Preview</a>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -92,7 +93,7 @@ const HomePage = () => (
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <a href="#latest">View latest posts</a>
+              <Link to="/posts">View posts</Link>
             </Button>
           </div>
         </div>

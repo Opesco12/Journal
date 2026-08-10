@@ -1,11 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import * as Yup from "yup";
 import { Spinner } from "../components/common/Spinner";
 import { Button } from "../components/ui/button";
 import { login, type LoginInput } from "../lib/api";
-import { AuthError, AuthField, AuthShell } from "./authShared";
+import { AuthField, AuthShell } from "./authShared";
 
 const loginSchema = Yup.object({
   email: Yup.string().email("Enter a valid email").required("Email is required"),
@@ -17,7 +18,10 @@ const LoginPage = () => {
   const mutation = useMutation({
     mutationFn: (values: LoginInput) => login(values),
     onSuccess: () => {
-      navigate("/");
+      navigate("/posts");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
@@ -91,8 +95,6 @@ const LoginPage = () => {
               Forgot password?
             </a>
           </div>
-
-          <AuthError message={mutation.error?.message} />
 
           <Button className="w-full" disabled={mutation.isPending} size="lg" type="submit">
             {mutation.isPending ? <Spinner /> : null}

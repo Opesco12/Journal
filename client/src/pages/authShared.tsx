@@ -57,15 +57,3 @@ export const AuthField = ({
     </div>
   );
 };
-
-export const AuthError = ({ message }: { message?: string }) => {
-  if (!message) {
-    return null;
-  }
-
-  return (
-    <div className="rounded-[16px] border border-destructive/20 bg-destructive-soft px-4 py-3 text-sm font-semibold text-destructive">
-      {message}
-    </div>
-  );
-};

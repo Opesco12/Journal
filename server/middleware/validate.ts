@@ -33,7 +33,11 @@ export const validate =
     }
 
     if ("query" in data && data.query) {
-      req.query = data.query;
+      Object.defineProperty(req, "query", {
+        value: data.query,
+        configurable: true,
+        enumerable: true,
+      });
     }
 
     next();
