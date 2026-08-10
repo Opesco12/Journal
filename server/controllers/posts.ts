@@ -96,7 +96,7 @@ export const getPostsByCategoryController = async (
 };
 
 export const createPostController = async (req: Request, res: Response) => {
-  const { title, body, images: bodyImages } = req.body;
+  const { title, body, images: bodyImages, published } = req.body;
   const userId = getAuthenticatedUserId(req);
   const files = (req.files as Express.Multer.File[]) || [];
 
@@ -119,6 +119,7 @@ export const createPostController = async (req: Request, res: Response) => {
     title,
     body,
     images: images as string[],
+    published,
     userId,
   });
 
@@ -126,7 +127,7 @@ export const createPostController = async (req: Request, res: Response) => {
 
   res.json({
     success: true,
-    message: "Post added to your drafts",
+    message: published ? "Post published successfully" : "Post added to your drafts",
   });
 };
 

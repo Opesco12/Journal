@@ -188,11 +188,13 @@ export const createNewPost = ({
   title,
   body,
   images,
+  published,
   userId,
 }: {
   title: string;
   body: string;
   images: string[];
+  published?: boolean;
   userId: string;
 }) =>
   prisma.post.create({
@@ -200,6 +202,7 @@ export const createNewPost = ({
       title,
       body,
       images,
+      ...(typeof published === "boolean" && { published }),
       userId,
     },
   });

@@ -4,6 +4,7 @@ import { Spinner } from "../common/Spinner";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
 import { Textarea } from "../ui/textarea";
 import type { CreatePostInput, Post } from "../../lib/api";
 
@@ -11,6 +12,7 @@ type PostFormProps = {
   initialPost?: Post;
   isSubmitting: boolean;
   onSubmit: (payload: CreatePostInput) => void;
+  showPublishSwitch?: boolean;
   submitLabel: string;
 };
 
@@ -18,6 +20,7 @@ type FormValues = {
   title: string;
   body: string;
   images: string;
+  published: boolean;
 };
 
 const schema = Yup.object({
@@ -42,6 +45,7 @@ export const PostForm = ({
   initialPost,
   isSubmitting,
   onSubmit,
+  showPublishSwitch,
   submitLabel,
 }: PostFormProps) => {
   const formik = useFormik<FormValues>({
@@ -50,6 +54,7 @@ export const PostForm = ({
       title: initialPost?.title ?? "",
       body: initialPost?.body ?? "",
       images: initialPost?.images?.join("\n") ?? "",
+      published: initialPost?.published ?? false,
     },
     validationSchema: schema,
     onSubmit: (values) => {
@@ -57,6 +62,7 @@ export const PostForm = ({
         title: values.title.trim(),
         body: values.body.trim(),
         images: parseImages(values.images),
+        ...(showPublishSwitch && { published: values.published }),
       });
     },
   });
@@ -111,9 +117,25 @@ export const PostForm = ({
         </p>
       </div>
 
+      {showPublishSwitch ? (
+        <div className="flex items-center justify-between gap-4 rounded-[18px] border border-border bg-muted/50 p-4">
+          <div>
+            <Label htmlFor="published">Publish immediately</Label>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Turn this on to publish now, or leave it off to save as a draft.
+            </p>
+          </div>
+          <Switch
+            checked={formik.values.published}
+            id="published"
+            onCheckedChange={(checked) => formik.setFieldValue("published", checked)}
+          />
+        </div>
+      ) : null}
+
       <Button className="w-full sm:w-auto" disabled={isSubmitting} size="lg" type="submit">
         {isSubmitting ? <Spinner /> : null}
-        {submitLabel}
+        {showPublishSwitch && formik.values.published ? "Publish post" : submitLabel}
       </Button>
     </form>
   );

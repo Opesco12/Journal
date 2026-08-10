@@ -102,6 +102,7 @@ export type CreatePostInput = {
   title: string;
   body: string;
   images?: string[];
+  published?: boolean;
 };
 
 export type UpdatePostInput = Partial<CreatePostInput>;

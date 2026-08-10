@@ -22,9 +22,10 @@ const CreatePostPage = () => {
               isSubmitting={mutation.isPending}
               onSubmit={(payload) =>
                 mutation.mutate(payload, {
-                  onSuccess: () => navigate("/posts/drafts"),
+                  onSuccess: () => navigate(payload.published ? "/posts" : "/posts/drafts"),
                 })
               }
+              showPublishSwitch
               submitLabel="Save draft"
             />
           </CardContent>
