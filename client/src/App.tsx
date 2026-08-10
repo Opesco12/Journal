@@ -1,7 +1,7 @@
 import "./App.css";
 
 const App = () => {
-  return <></>;
+  return <div className="h-screen w-full "></div>;
 };
 
 export default App;

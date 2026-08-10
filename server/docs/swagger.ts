@@ -357,7 +357,9 @@ const routeDocs: RouteDoc[] = [
     parameters: [cuidParam("postId", "Post ID")],
     requestBody: {
       required: true,
-      ...multipartContent({ $ref: "#/components/schemas/PostUpdateFormRequest" }),
+      ...multipartContent({
+        $ref: "#/components/schemas/PostUpdateFormRequest",
+      }),
     },
     responses: {
       "200": successResponse("Post updated"),
@@ -704,7 +706,9 @@ const routeDocs: RouteDoc[] = [
     security: authSecurity,
     requestBody: {
       required: true,
-      ...jsonContent({ $ref: "#/components/schemas/AssignPostCategoryRequest" }),
+      ...jsonContent({
+        $ref: "#/components/schemas/AssignPostCategoryRequest",
+      }),
     },
     responses: {
       "200": successResponse("Post assigned to category successfully"),
@@ -752,23 +756,26 @@ const toOpenApiPath = (path: string) =>
   path.replace(/:([A-Za-z0-9_]+)/g, "{$1}");
 
 const buildPaths = (routes: RouteDoc[]) =>
-  routes.reduce<Record<string, Record<string, OpenApiSchema>>>((paths, route) => {
-    const path = toOpenApiPath(route.path);
-    paths[path] ??= {};
-    paths[path][route.method] = {
-      tags: route.tags,
-      summary: route.summary,
-      ...(route.description && { description: route.description }),
-      ...(route.security && { security: route.security }),
-      ...(route.parameters && { parameters: route.parameters }),
-      ...(route.requestBody && { requestBody: route.requestBody }),
-      responses: route.responses ?? {
-        "200": successResponse(),
-      },
-    };
+  routes.reduce<Record<string, Record<string, OpenApiSchema>>>(
+    (paths, route) => {
+      const path = toOpenApiPath(route.path);
+      paths[path] ??= {};
+      paths[path][route.method] = {
+        tags: route.tags,
+        summary: route.summary,
+        ...(route.description && { description: route.description }),
+        ...(route.security && { security: route.security }),
+        ...(route.parameters && { parameters: route.parameters }),
+        ...(route.requestBody && { requestBody: route.requestBody }),
+        responses: route.responses ?? {
+          "200": successResponse(),
+        },
+      };
 
-    return paths;
-  }, {});
+      return paths;
+    },
+    {},
+  );
 
 export const swaggerSpec = {
   openapi: "3.0.3",
@@ -779,7 +786,11 @@ export const swaggerSpec = {
   },
   servers: [
     {
-      url: "http://localhost:3000",
+      url: "https://journal-6ui2.onrender.com",
+      description: "Production server",
+    },
+    {
+      url: "http://localhost:8000",
       description: "Local development server",
     },
   ],
@@ -812,7 +823,11 @@ export const swaggerSpec = {
         properties: {
           firstname: { type: "string", example: "Ada" },
           lastname: { type: "string", example: "Lovelace" },
-          email: { type: "string", format: "email", example: "ada@example.com" },
+          email: {
+            type: "string",
+            format: "email",
+            example: "ada@example.com",
+          },
           password: { type: "string", minLength: 8, example: "password123" },
         },
       },
@@ -820,7 +835,11 @@ export const swaggerSpec = {
         type: "object",
         required: ["email", "password"],
         properties: {
-          email: { type: "string", format: "email", example: "ada@example.com" },
+          email: {
+            type: "string",
+            format: "email",
+            example: "ada@example.com",
+          },
           password: { type: "string", example: "password123" },
         },
       },
