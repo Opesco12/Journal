@@ -102,7 +102,9 @@ export type CreatePostInput = {
   title: string;
   body: string;
   images?: string[];
+  imageFiles?: File[];
   published?: boolean;
+  categoryIds?: string[];
 };
 
 export type UpdatePostInput = Partial<CreatePostInput>;
@@ -272,12 +274,40 @@ export const getPost = (postId: string) =>
     auth: true,
   });
 
-export const createPost = (payload: CreatePostInput) =>
-  apiRequest<MessageResponse>("/api/posts/create", {
+const buildPostFormData = (payload: CreatePostInput) => {
+  const formData = new FormData();
+
+  formData.append("title", payload.title);
+  formData.append("body", payload.body);
+
+  payload.images?.forEach((image) => {
+    formData.append("images", image);
+  });
+
+  payload.imageFiles?.forEach((file) => {
+    formData.append("images", file);
+  });
+
+  if (typeof payload.published === "boolean") {
+    formData.append("published", String(payload.published));
+  }
+
+  payload.categoryIds?.forEach((categoryId) => {
+    formData.append("categoryIds", categoryId);
+  });
+
+  return formData;
+};
+
+export const createPost = (payload: CreatePostInput) => {
+  const hasFiles = Boolean(payload.imageFiles?.length);
+
+  return apiRequest<MessageResponse>("/api/posts/create", {
     auth: true,
     method: "POST",
-    body: JSON.stringify(payload),
+    body: hasFiles ? buildPostFormData(payload) : JSON.stringify(payload),
   });
+};
 
 export const updatePost = (postId: string, payload: UpdatePostInput) =>
   apiRequest<SinglePostResponse>(`/api/posts/update/${postId}`, {

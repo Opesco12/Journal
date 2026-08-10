@@ -189,12 +189,14 @@ export const createNewPost = ({
   body,
   images,
   published,
+  categoryIds,
   userId,
 }: {
   title: string;
   body: string;
   images: string[];
   published?: boolean;
+  categoryIds?: string[];
   userId: string;
 }) =>
   prisma.post.create({
@@ -203,6 +205,19 @@ export const createNewPost = ({
       body,
       images,
       ...(typeof published === "boolean" && { published }),
+      ...(categoryIds?.length
+        ? {
+            postCategories: {
+              create: categoryIds.map((categoryId) => ({
+                category: {
+                  connect: {
+                    id: categoryId,
+                  },
+                },
+              })),
+            },
+          }
+        : {}),
       userId,
     },
   });

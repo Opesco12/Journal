@@ -8,6 +8,14 @@ const imageUrlsSchema = z
   .optional()
   .transform((val) => (!val ? [] : Array.isArray(val) ? val : [val]));
 
+const optionalBooleanSchema = z
+  .union([
+    z.boolean(),
+    z.enum(["true", "false"]).transform((value) => value === "true"),
+  ])
+  .optional()
+  .default(false);
+
 const createPostBodySchema = z.object({
   title: z
     .string()
@@ -23,7 +31,7 @@ const createPostBodySchema = z.object({
 
   images: imageUrlsSchema,
 
-  published: z.boolean().optional().default(false),
+  published: optionalBooleanSchema,
 
   categoryIds: z
     .union([z.string().cuid(), z.array(z.string().cuid())])

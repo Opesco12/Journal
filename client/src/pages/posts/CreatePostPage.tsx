@@ -1,11 +1,20 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { toast } from "sonner";
 import { Card, CardContent } from "../../components/ui/card";
 import { PostForm } from "../../components/posts/PostForm";
-import { useCreatePost } from "../../lib/postHooks";
+import { useCategories, useCreatePost } from "../../lib/postHooks";
 
 const CreatePostPage = () => {
   const navigate = useNavigate();
   const mutation = useCreatePost();
+  const categoriesQuery = useCategories({ limit: 100, sortBy: "name", sortOrder: "asc" });
+
+  useEffect(() => {
+    if (categoriesQuery.error) {
+      toast.error(categoriesQuery.error.message);
+    }
+  }, [categoriesQuery.error]);
 
   return (
     <main className="min-h-screen px-5 py-8 sm:px-8">
@@ -19,12 +28,15 @@ const CreatePostPage = () => {
         <Card className="rounded-[28px]">
           <CardContent className="p-6 sm:p-8">
             <PostForm
+              categories={categoriesQuery.data?.categories}
+              categoriesLoading={categoriesQuery.isLoading}
               isSubmitting={mutation.isPending}
               onSubmit={(payload) =>
                 mutation.mutate(payload, {
                   onSuccess: () => navigate(payload.published ? "/posts" : "/posts/drafts"),
                 })
               }
+              showCategorySelect
               showPublishSwitch
               submitLabel="Save draft"
             />
